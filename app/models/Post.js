@@ -15,9 +15,8 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  authorID: {
+  authorId: {
     type: String,
-    default: uuidv1,
     required: true,
     unique: true,
   },

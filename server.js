@@ -28,19 +28,27 @@ mongoose.connect(
 *******************************/
 
 const homeRoute = require("./app/routes/home");
-const usersRoute = require("./app/routes/user");
+const authorRoute = require("./app/routes/authors");
 const postsRoute = require("./app/routes/posts");
-const loginRoute = require("./app/routes/auth");
+const authRoute = require("./app/routes/auth");
 
 /*******************************
 		Initialize Routes
 *******************************/
 app.use("/api/v1/home", homeRoute);
-app.use("/api/v1/users", usersRoute);
-app.use("/api/v1/posts", postsRoute);
-app.use("/api/v1/auth", loginRoute);
 
-// Set port, listen for requests
+// The authors can update their credentials and posts here.
+app.use("/api/v1/authors", authorRoute);
+
+//View all posts, categories and individual posts.
+app.use("/api/v1/posts", postsRoute);
+
+//Only handles login and the issuance of verification tokens.
+app.use("/api/v1/auth", authRoute);
+
+/*******************************
+		Set port, listen for requests
+*******************************/
 const PORT = process.env.APP_PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);

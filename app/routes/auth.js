@@ -1,10 +1,16 @@
-//This is the Authentication Route
+/*This is the Authentication Route that handles login logic, the issuance of 
+authentication tokens and adding new users.
+*/
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const {
   registerValidation,
   loginValidation,
 } = require("../controllers/validation");
+
+// Load .env Variables
+require("dotenv").config();
 
 /*******************************
 		Initialize Routes
@@ -48,6 +54,7 @@ router.post("/register", async (req, res) => {
     const author = await newAuthor.save();
     res.status(200).json(author);
   } catch (error) {
+    console.log("stop...");
     res.status(500).json({ message: error });
   }
 });
@@ -61,7 +68,7 @@ router.post("/login", async (req, res) => {
   const { error } = loginValidation(req.body);
   if (error) return res.send(error.details[0].message);
 
-  //Checking if the User Exist
+  //Checking if the Author Exist
   const author = await AuthorSchema.findOne({ email: req.body.email });
   if (!author) return res.status(400).send("Email Does NOT exist!");
 
@@ -70,14 +77,8 @@ router.post("/login", async (req, res) => {
   if (!validPass) return res.status(400).send("Invalid Password!");
 
   //Create and assign a TOKEN
-
-  try {
-    //Destructure the Author output so as not to return the password.
-    const { password, ...others } = author._doc;
-    res.status(200).json(others);
-  } catch (error) {
-    res.status(500).json({ message: error });
-  }
+  const token = jwt.sign({ _id: author._id }, process.env.TOKEN_SECRET);
+  res.header("auth-token", token).send(token);
 });
 
 module.exports = router;

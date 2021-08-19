@@ -3,12 +3,6 @@ const { v1: uuidv1 } = require("uuid");
 
 const AuthorSchema = new mongoose.Schema(
   {
-    authorId: {
-      type: String,
-      default: uuidv1,
-      required: true,
-      unique: true,
-    },
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true, min: 10, max: 13 },
@@ -16,6 +10,7 @@ const AuthorSchema = new mongoose.Schema(
     avator: { type: String, default: "" },
     role: { type: String, default: "standard" },
     active: { type: Boolean, default: true },
+    authorId: { type: String, default: uuidv1, required: true, unique: true },
   },
   { timestamps: true, strict: true }
 );

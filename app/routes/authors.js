@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
+const verifyToken = require("../controllers/verifyToken");
 
 /*******************************
 		Initialize Routes
@@ -9,10 +10,12 @@ const PostSchema = require("../models/Post");
 
 /*******************************
 	        PUT
-  Update Author credentials.
+  Update Author credentials and posts based on Token.
 *******************************/
-router.put("/:id", async (req, res) => {
-  if (req.body.authorId === req.params.id) {
+router.put("/:id", verifyToken, async (req, res) => {
+  // Compare the token with the id passed on the params.
+  if (req.author._id === req.params.id) {
+    // The authorId is passed via the verifyToken middleware.
     if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
       req.body.password = await bcrypt.hash(req.body.password, salt);
@@ -26,6 +29,8 @@ router.put("/:id", async (req, res) => {
         },
         { new: true }
       );
+      //Instead of sending back the entire data only send a message of confirmation..
+      //Use local storage on the front end for confirmation before sending to the db.
       res.status(200).json(updatedUser);
     } catch (error) {
       res.status(500).json({ message: error });
@@ -39,7 +44,7 @@ router.put("/:id", async (req, res) => {
 	        GET
       Get all Authors.
 *******************************/
-router.get("/", async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
   const authors = await AuthorSchema.find({});
   try {
     //Destructure the Author output so as not to return the password.
@@ -53,14 +58,14 @@ router.get("/", async (req, res) => {
 	        DELETE
   Delete an individual Author.
 *******************************/
-router.delete("/:id", async (req, res) => {
-  if (req.body.authorId === req.params.id) {
+router.delete("/:id", verifyToken, async (req, res) => {
+  if (req.author._id === req.params.id) {
     try {
       const user = await AuthorSchema.findById(req.params.id);
       try {
-        //Delete the posts belonging to a specific autor based in the authorId.
+        //Delete the posts belonging to a specific author based in the authorId.
         await PostSchema.deleteMany({
-          authorId: user.authorId,
+          authorId: author.authorId,
         });
         await AuthorSchema.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: "User has been deleted." });
