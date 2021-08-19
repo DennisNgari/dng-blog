@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { v1: uuidv1 } = require("uuid");
 
 const CategorySchema = new mongoose.Schema({
   categoryId: {
@@ -18,4 +19,3 @@ const CategorySchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("Category", CategorySchema);
-

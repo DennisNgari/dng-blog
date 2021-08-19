@@ -1,27 +1,23 @@
-const mongoose = require('mongoose');
-const { v1: uuidv1 } = require('uuid');
+const mongoose = require("mongoose");
+const { v1: uuidv1 } = require("uuid");
 
 const AuthorSchema = new mongoose.Schema(
-	{
-		authorID: {
-			type: String,
-			default: uuidv1,
-			required: true,
-			unique: true,
-		},
-		fullName: { type: String, required: true },
-		email: { type: String, required: true, unique: true },
-		phone: { type: String, unique: true },
-		password: { type: String, required: true },
-		avator: { type: String },
-		role: { type: String, default: 'standard' },
-		active: { type: Boolean, default: true },
-		dateCreated: { type: Date, default: Date.now },
-		dateModified: { type: Date },
-	},
-	{ strict: true }
+  {
+    authorId: {
+      type: String,
+      default: uuidv1,
+      required: true,
+      unique: true,
+    },
+    fullName: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    phone: { type: String, required: true, min: 10, max: 13 },
+    password: { type: String, required: true, min: 6, max: 1025 },
+    avator: { type: String, default: "" },
+    role: { type: String, default: "standard" },
+    active: { type: Boolean, default: true },
+  },
+  { timestamps: true, strict: true }
 );
 
-module.exports = mongoose.model('Author', AuthorSchema);
-
-
+module.exports = mongoose.model("Author", AuthorSchema);

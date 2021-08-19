@@ -5,8 +5,15 @@ const UserSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
+  },
+  description: {
+    type: String,
     min: 6,
-    max: 255,
+    max: 200,
+  },
+  headerImage: {
+    type: String,
+    required: false,
   },
   authorID: {
     type: String,
@@ -27,14 +34,6 @@ const UserSchema = new mongoose.Schema({
     min: 6,
     max: 1250,
   },
-  description: {
-    type: String,
-    min: 6,
-    max: 200,
-  },
-  headerImage: {
-    type: String,
-  },
   slug: {
     type: String,
     min: 6,
@@ -44,10 +43,8 @@ const UserSchema = new mongoose.Schema({
     type: [],
   },
   category: {
-    type: String,
-    required: true,
-    min: 6,
-    max: 255,
+    type: Array,
+    required: false,
   },
   postId: {
     type: String,
@@ -58,4 +55,3 @@ const UserSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("Post", UserSchema);
- 

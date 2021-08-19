@@ -45,9 +45,10 @@ router.get("/:postId", async (req, res) => {
 	//GET posts by slug
 *******************************/
 
-//-----------------------------//
-//POST New Post Endpoint
-//-----------------------------//
+/*******************************
+	      POST
+  Create a New post
+*******************************/
 router.post("/newpost", async (req, res) => {
   try {
     const newPost = new PostModel({
@@ -68,12 +69,14 @@ router.post("/newpost", async (req, res) => {
   }
 });
 
-//################################//
-//PUT Update a Post Endpoint
-//################################//
+/*******************************
+	    PATCH
+  Update a New post
+*******************************/
 
-//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
-//DELETE a single POST
-//-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-//
+/*******************************
+	       DELETE
+  Remove a specific post
+*******************************/
 
 module.exports = router;
