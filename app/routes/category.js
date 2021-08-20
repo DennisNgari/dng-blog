@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const verifyToken = require("../controllers/verifyToken");
 
 /*******************************
 		Initialize Routes
@@ -9,7 +10,7 @@ const CategorySchema = require("../models/Category");
 	          GET
     Get posts by Category
 *******************************/
-//What the User clicks is taken as the :category is taken as the params in the FrontEnd.
+//What the User clicks a category in the frontEnd, the category is taken as the " :category".
 
 router.get("/:category", async (req, res) => {
   const { category } = req.params;
@@ -44,42 +45,64 @@ router.get("/", async (req, res) => {
 	          PUT
   Create a new category
 *******************************/
-
 router.post("/newcategory", verifyToken, async (req, res) => {
-  //Add the authorId from the auth-token as the FK in the PostSchema.
+  /* Add the authorId from the auth-token as the FK in the CategorySchema.
+      This is used to control the access for deleting and adding new categories.
+  */
+
   const tokenId = await req.author._id;
-  //Check if the Post exists.
-  const postExists = await PostSchema.findOne({
-    title: req.body.title,
-    body: req.body.body,
-    description: req.body.description,
+  //Check if the category already exists.
+  const categoryExists = await CategorySchema.findOne({
+    categoryName: req.body.categoryName,
   });
-  if (postExists)
-    return res.status(400).json({ message: "Post already exists!" });
+  if (categoryExists)
+    return res.status(400).json({ message: "Category already exists!" });
+
+  //Create a New Category.
+  const newCategory = new CategorySchema({
+    categoryName: req.body.categoryName,
+    authorId: tokenId,
+  });
 
   try {
-    const newPost = new PostSchema({
-      authorId: tokenId,
-      title: req.body.title,
-      body: req.body.body,
-      description: req.body.description,
-      headerImage: req.body.headerImage,
-      slug: req.body.slug,
-      tags: req.body.tags,
-      category: req.body.category,
-    });
-
-    const post = await newPost.save();
-    res.status(200).json(post);
+    const category = await newCategory.save();
+    res.status(200).json(category);
   } catch (error) {
     res.status(500).json({ message: error });
   }
 });
 
 /*******************************
-	          PUT
-  Update the Categories
+	        PUT
+  Update a category
 *******************************/
+router.put("/updatecategory/:id", verifyToken, async (req, res) => {
+  try {
+    const updatedCategory = await CategorySchema.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: req.body,
+      },
+      { new: true }
+    );
+    res.status(200).json(updatedCategory);
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+/*******************************
+	      DELETE
+  Delete a Category
+*******************************/
+router.delete("/deletecategory/:id", verifyToken, async (req, res) => {
+  try {
+    await CategorySchema.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Category has been deleted." });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
 
 //Export
 module.exports = router;

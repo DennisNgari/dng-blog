@@ -1,14 +1,11 @@
 const mongoose = require("mongoose");
-const { v1: uuidv1 } = require("uuid");
 
 const CategorySchema = new mongoose.Schema({
-  categoryId: {
-    type: String,
-    default: uuidv1,
-    required: true,
-    unique: true,
-  },
   categoryName: {
+    type: String,
+    required: true,
+  },
+  authorId: {
     type: String,
     required: true,
   },

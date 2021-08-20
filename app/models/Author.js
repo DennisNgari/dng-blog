@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { v1: uuidv1 } = require("uuid");
 
 const AuthorSchema = new mongoose.Schema(
   {
