@@ -89,6 +89,7 @@ router.delete("/deleteone/:id", verifyToken, async (req, res) => {
   Delete an individual Author and all their posts.
 *******************************/
 router.delete("/:id", verifyToken, async (req, res) => {
+  //The req.params.id should be gotten from the body of the post i.e the authorId in the post schema.
   if (req.author._id === req.params.id) {
     try {
       const author = await AuthorSchema.findById(req.params.id);

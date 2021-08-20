@@ -31,6 +31,7 @@ const homeRoute = require("./app/routes/home");
 const authorRoute = require("./app/routes/authors");
 const postsRoute = require("./app/routes/posts");
 const authRoute = require("./app/routes/auth");
+const categoryRoute = require("./app/routes/category");
 
 /*******************************
 		Initialize Routes
@@ -45,6 +46,9 @@ app.use("/api/v1/posts", postsRoute);
 
 //Only handles login and the issuance of verification tokens.
 app.use("/api/v1/auth", authRoute);
+
+//Create new categories and create post based on category.
+app.use("/api/v1/category", categoryRoute);
 
 /*******************************
 		Set port, listen for requests

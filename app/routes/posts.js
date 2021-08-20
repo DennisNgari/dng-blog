@@ -13,7 +13,6 @@ const PostSchema = require("../models/Post");
 router.post("/newpost", verifyToken, async (req, res) => {
   //Add the authorId from the auth-token as the FK in the PostSchema.
   const tokenId = await req.author._id;
-
   //Check if the Post exists.
   const postExists = await PostSchema.findOne({
     title: req.body.title,
@@ -36,7 +35,6 @@ router.post("/newpost", verifyToken, async (req, res) => {
     });
 
     const post = await newPost.save();
-    console.log("saved..");
     res.status(200).json(post);
   } catch (error) {
     res.status(500).json({ message: error });
@@ -51,7 +49,8 @@ router.post("/newpost", verifyToken, async (req, res) => {
 *******************************/
 router.put("/updatepost/:id", verifyToken, async (req, res) => {
   // Compare the token with the id passed on the params.
-  if (req.body._id === req.params.id) {
+  //The req.params.id is gotten from the body of the post i.e the authorId in the post schema.
+  if (req.author._id === req.params.id) {
     try {
       // Update the new User and send the data of the updated user in Json form.
       const updatedPost = await PostSchema.findByIdAndUpdate(
@@ -135,18 +134,6 @@ router.delete("/deleteonepost/:id", verifyToken, async (req, res) => {
     res.status(401).json({ message: "You can only DELETE your own Post!" });
   }
 });
-
-/*******************************
-	//GET posts by category
-*******************************/
-
-/*******************************
-	//GET Editorial Posts
-*******************************/
-
-/*******************************
-	//GET Featured Posts
-*******************************/
 
 /*******************************
 	//GET posts by slug
