@@ -19,7 +19,7 @@ const AuthorSchema = require("../models/Author");
 
 /*******************************
 	        POST 
-    Register a new user
+      Register a new Author
 *******************************/
 router.post("/register", async (req, res) => {
   // Validate the data before adding a new user.

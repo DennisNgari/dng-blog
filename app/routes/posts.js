@@ -44,7 +44,37 @@ router.post("/newpost", verifyToken, async (req, res) => {
 });
 
 /*******************************
-	//GET all Posts
+	    PUT
+  Update a post
+
+  //uncomplete..
+*******************************/
+router.put("/updatepost/:id", verifyToken, async (req, res) => {
+  // Compare the token with the id passed on the params.
+  if (req.body._id === req.params.id) {
+    try {
+      // Update the new User and send the data of the updated user in Json form.
+      const updatedPost = await PostSchema.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: req.body,
+        },
+        { new: true }
+      );
+      //Instead of sending back the entire data only send a message of confirmation..
+      //Use local storage on the front end for confirmation before sending to the db.
+      res.status(200).json(updatedPost);
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
+  } else {
+    res.status(401).json({ message: "You can only update your own post!" });
+  }
+});
+
+/*******************************
+	      GET
+  Get all Posts
 *******************************/
 router.get("/", async (req, res) => {
   const posts = await PostSchema.find({});
@@ -56,8 +86,21 @@ router.get("/", async (req, res) => {
 });
 
 /*******************************
-	GET a specific Post by ID.
-//Problem Not getting the individual post
+	      GET
+  Get specific post based on PostId
+*******************************/
+router.get("/:id", async (req, res) => {
+  try {
+    const post = await PostSchema.findById(req.params.id);
+    res.status(200).json(post);
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+/*******************************
+	          GET 
+// Get all the posts of the logged in author.
 *******************************/
 router.get("/:id", verifyToken, async (req, res) => {
   //The params.id in the PostsSchema is the authorId and not PostId
@@ -77,6 +120,23 @@ router.get("/:id", verifyToken, async (req, res) => {
 });
 
 /*******************************
+	       DELETE
+  Remove a specific post
+*******************************/
+router.delete("/deleteonepost/:id", verifyToken, async (req, res) => {
+  if (req.author._id === req.params.id) {
+    try {
+      await PostSchema.findByIdAndDelete(req.params.id);
+      res.status(200).json({ message: "Post has been deleted." });
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
+  } else {
+    res.status(401).json({ message: "You can only DELETE your own Post!" });
+  }
+});
+
+/*******************************
 	//GET posts by category
 *******************************/
 
@@ -92,14 +152,5 @@ router.get("/:id", verifyToken, async (req, res) => {
 	//GET posts by slug
 *******************************/
 
-/*******************************
-	    PATCH
-  Update a New post
-*******************************/
-
-/*******************************
-	       DELETE
-  Remove a specific post
-*******************************/
-
+//Export
 module.exports = router;
