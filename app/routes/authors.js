@@ -55,17 +55,47 @@ router.get("/", verifyToken, async (req, res) => {
 });
 
 /*******************************
+	        GET
+      Get a specific author
+*******************************/
+router.get("/:id", verifyToken, async (req, res) => {
+  try {
+    const author = await AuthorSchema.findById(req.params.id);
+    res.status(200).json(author);
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+/*******************************
 	        DELETE
-  Delete an individual Author.
+  Delete an individual Author but leave the Posts.
+*******************************/
+router.delete("/deleteone/:id", verifyToken, async (req, res) => {
+  if (req.author._id === req.params.id) {
+    try {
+      await AuthorSchema.findByIdAndDelete(req.params.id);
+      res.status(200).json({ message: "User has been deleted." });
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
+  } else {
+    res.status(401).json({ message: "You can only DELETE your account!" });
+  }
+});
+
+/*******************************
+	        DELETE
+  Delete an individual Author and all their posts.
 *******************************/
 router.delete("/:id", verifyToken, async (req, res) => {
   if (req.author._id === req.params.id) {
     try {
-      const user = await AuthorSchema.findById(req.params.id);
+      const author = await AuthorSchema.findById(req.params.id);
       try {
-        //Delete the posts belonging to a specific author based in the authorId.
+        //Delete the posts belonging to that specific author based in the authorId.
         await PostSchema.deleteMany({
-          authorId: author.authorId,
+          authorId: req.params.id,
         });
         await AuthorSchema.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: "User has been deleted." });

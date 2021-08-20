@@ -10,7 +10,6 @@ const AuthorSchema = new mongoose.Schema(
     avator: { type: String, default: "" },
     role: { type: String, default: "standard" },
     active: { type: Boolean, default: true },
-    authorId: { type: String, default: uuidv1, required: true, unique: true },
   },
   { timestamps: true, strict: true }
 );

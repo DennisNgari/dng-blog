@@ -59,15 +59,21 @@ router.get("/", async (req, res) => {
 	GET a specific Post by ID.
 //Problem Not getting the individual post
 *******************************/
-router.get("/:postId", async (req, res) => {
-  try {
-    const post = await PostSchema.findById(req.params.postId);
-    if (!post) return res.status(404).send("Post does not exist.");
-    //   return res.status(404).json({ message: 'Post does not exist..' });
-    res.json(post);
-  } catch (error) {
-    res.json({ message: error });
+router.get("/:id", verifyToken, async (req, res) => {
+  //The params.id in the PostsSchema is the authorId and not PostId
+  if (req.author._id === req.params.id) {
+    try {
+      const posts = await PostSchema.find({});
+
+      const filteredposts = posts.filter((post) => {
+        return post.authorId === req.params.id;
+      });
+      res.status(200).json(filteredposts);
+    } catch (error) {
+      res.status(500).send(error);
+    }
   }
+  res.status(500).json({ message: "User DOES NOT exist! " });
 });
 
 /*******************************
