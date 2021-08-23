@@ -75,7 +75,7 @@ router.put("/updatepost/:id", verifyToken, async (req, res) => {
 	      GET
   Get all Posts
 *******************************/
-router.get("/", [verifyToken, verifyAdmin], async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
   const posts = await PostSchema.find({});
   try {
     res.send(posts);

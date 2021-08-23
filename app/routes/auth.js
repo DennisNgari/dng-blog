@@ -5,7 +5,7 @@ const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Role = require("../models/Role");
-const Active = require("../models/Active");
+
 const {
   registerValidation,
   loginValidation,
@@ -69,24 +69,27 @@ router.post("/register", async (req, res) => {
     { expiresIn: "2h" }
   );
   //Map the new role
-  const newRole = new Role({
-    author: newAuthor._id,
-  });
-  //Map the new Status
-  const newStatus = new Active({
-    author: newAuthor._id,
-  });
+  // const newRole = new Role({
+  //   author: newAuthor._id,
+  // });
+  // //Map the new Status
+  // const newStatus = new Active({
+  //   author: newAuthor._id,
+  // });
 
   //Save the token
   newAuthor.token = token;
 
   //Save the new Author and the Role.
   try {
-    const role = await newRole.save();
+    // const role = await newRole.save();
+    const newRole = new Role({
+      author: newAuthor._id,
+    });
     const author = await newAuthor.save();
-    const active = await newStatus.save();
-    console.log(role);
-    console.log(active);
+    const role = await newRole.save();
+    console.log(newRole);
+
     res.status(200).json(author);
   } catch (error) {
     res.status(500).json({ message: error });
@@ -128,9 +131,9 @@ router.post("/login", async (req, res) => {
     { expiresIn: "2h" }
   );
   //Save and replace the old token with the new one.
-  author.token = token;
-  // res.header("x-auth-token", token).json(token);
-  res.send(token);
+  // author.token = newtoken;
+  res.header("x-auth-token", token).send(token);
+  // res.send(token);
 });
 
 module.exports = router;

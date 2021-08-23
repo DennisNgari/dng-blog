@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
-const config = process.env;
+
+const Role = require("../models/Role");
 
 /*******************************
 	Verify User Token with 
@@ -7,12 +8,13 @@ const config = process.env;
 *********************************/
 
 const verifyToken = (req, res, next) => {
-  const token = req.header["x-auth-token"];
+  const token = req.headers["x-auth-token"];
   if (!token) return res.status(403).json({ message: "Access Denied" });
 
   try {
     const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-    req.user = decoded;
+    req.author = decoded;
+    res.locals.user = req.author;
     next();
   } catch (error) {
     res.status(400).json({ message: "Invalid Token!" });
@@ -25,19 +27,38 @@ const verifyToken = (req, res, next) => {
 *********************************/
 
 //Admin
+// const verifyAdmin = async (req, res, next) => {
+//   const aauth = await AuthorSchema.find({})
+//     .populate("roles")
+//     .exec((err, loggedInUser) => {
+//       if (err) {
+//         return res.status(500).send({ message: err });
+//       }
+//       if (loggedInUser.role === "standard") {
+//         next();
+//         return;
+//       }
+//     });
+//   return res.status(403).json({ message: "Unauthorized! " });
+// };
+
 const verifyAdmin = async (req, res, next) => {
-  const aauth = await AuthorSchema.findOne({ _id: author._id })
-    .populate("roles")
+  const author = res.locals.user;
+
+  Role.findOne({ author: author.authorId })
+    .populate("author")
     .exec((err, loggedInUser) => {
       if (err) {
         return res.status(500).send({ message: err });
       }
-      if (loggedInUser.role === "standard") {
+      const { role } = loggedInUser;
+      if (role === "standard") {
         next();
         return;
+      } else {
+        return res.status(403).json({ message: "Unauthorized! " });
       }
     });
-  return res.status(403).json({ message: "Unauthorized! " });
 };
 
 module.exports = { verifyToken, verifyAdmin };
