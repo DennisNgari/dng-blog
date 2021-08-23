@@ -1,9 +1,10 @@
 const router = require("express").Router();
+const { verifyToken, verifyAdmin } = require("../middlewares/auth");
 
 /*******************************
 		Initialize Routes
 *******************************/
-const verifyToken = require("../controllers/verifyToken");
+// const verifyToken = require("../controllers/verifyToken");
 const PostSchema = require("../models/Post");
 
 /*******************************
@@ -44,7 +45,6 @@ router.post("/newpost", verifyToken, async (req, res) => {
 /*******************************
 	    PUT
   Update a post
-
   //uncomplete..
 *******************************/
 router.put("/updatepost/:id", verifyToken, async (req, res) => {
@@ -75,7 +75,7 @@ router.put("/updatepost/:id", verifyToken, async (req, res) => {
 	      GET
   Get all Posts
 *******************************/
-router.get("/", async (req, res) => {
+router.get("/", [verifyToken, verifyAdmin], async (req, res) => {
   const posts = await PostSchema.find({});
   try {
     res.send(posts);

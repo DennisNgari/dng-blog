@@ -44,7 +44,7 @@ router.put("/:id", verifyToken, async (req, res) => {
 	        GET
       Get all Authors.
 *******************************/
-router.get("/", verifyToken, async (req, res) => {
+router.get("/", async (req, res) => {
   const authors = await AuthorSchema.find({});
   try {
     //Destructure the Author output so as not to return the password.

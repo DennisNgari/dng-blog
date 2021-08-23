@@ -1,27 +1,15 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const app = express();
 
 // Load ENV Variables
 require("dotenv").config();
-
 app.use(express.json());
 
 /************************* 
-		Set Up DB 
+		Connect to the DB 
 *************************/
-mongoose.connect(
-  process.env.MONGO_URI,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-  },
-  () => {
-    console.log("connected");
-  }
-);
+const connection = require("./app/controllers/db");
+connection();
 
 /*******************************
 		Import Routes
@@ -32,6 +20,8 @@ const authorRoute = require("./app/routes/authors");
 const postsRoute = require("./app/routes/posts");
 const authRoute = require("./app/routes/auth");
 const categoryRoute = require("./app/routes/category");
+const mediaRoute = require("./app/routes/media");
+const roleRoute = require("./app/routes/role");
 
 /*******************************
 		Initialize Routes
@@ -49,6 +39,12 @@ app.use("/api/v1/auth", authRoute);
 
 //Create new categories and create post based on category.
 app.use("/api/v1/category", categoryRoute);
+
+//Create new media and their captions
+app.use("/api/v1/media", mediaRoute);
+
+//Create new role and their update the current one.
+app.use("/api/v1/role", roleRoute);
 
 /*******************************
 		Set port, listen for requests

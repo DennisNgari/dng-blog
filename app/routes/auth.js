@@ -4,10 +4,13 @@ authentication tokens and adding new users.
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Role = require("../models/Role");
+const Active = require("../models/Active");
 const {
   registerValidation,
   loginValidation,
 } = require("../controllers/validation");
+const Author = require("../models/Author");
 
 // Load .env Variables
 require("dotenv").config();
@@ -42,19 +45,50 @@ router.post("/register", async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const hashPass = await bcrypt.hash(req.body.password, salt);
 
-  //Create a New User
+  //Create a New Author in our database.
+  const { fullName, email, phone, role } = req.body;
+  //Change the fullName to sentence and email to lower case before saving in the db.
+  const titleCase = (str) => {
+    str = str.toLowerCase().split(" ");
+    for (var i = 0; i < str.length; i++) {
+      str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+    }
+    return str.join(" ");
+  };
+
   const newAuthor = new AuthorSchema({
-    fullName: req.body.fullName,
-    email: req.body.email,
-    phone: req.body.phone,
+    fullName: titleCase(fullName),
+    email: email.toLowerCase(),
+    phone,
     password: hashPass,
   });
+  //Generate a token when the author registers.
+  const token = jwt.sign(
+    { authorId: newAuthor._id, email },
+    process.env.TOKEN_SECRET,
+    { expiresIn: "2h" }
+  );
+  //Map the new role
+  const newRole = new Role({
+    author: newAuthor._id,
+  });
+  //Map the new Status
+  const newStatus = new Active({
+    author: newAuthor._id,
+  });
 
+  //Save the token
+  newAuthor.token = token;
+
+  //Save the new Author and the Role.
   try {
+    const role = await newRole.save();
     const author = await newAuthor.save();
+    const active = await newStatus.save();
+    console.log(role);
+    console.log(active);
     res.status(200).json(author);
   } catch (error) {
-    console.log("stop...");
     res.status(500).json({ message: error });
   }
 });
@@ -69,16 +103,45 @@ router.post("/login", async (req, res) => {
   if (error) return res.send(error.details[0].message);
 
   //Checking if the Author Exist
-  const author = await AuthorSchema.findOne({ email: req.body.email });
+  // Get user input
+  const { email, password } = req.body;
+  /*
+  The two <if> statements can also be written as;
+  if (user && (await bcrypt.compare(password, user.password))){
+    -- if correct assign a new token
+  }else{
+    -- Invalid Username and/password!
+  }
+  */
+
+  const author = await AuthorSchema.findOne({ email });
   if (!author) return res.status(400).send("Email Does NOT exist!");
 
   //Checking if the password is correct
-  const validPass = await bcrypt.compare(req.body.password, author.password);
+  const validPass = await bcrypt.compare(password, author.password);
   if (!validPass) return res.status(400).send("Invalid Password!");
 
-  //Create and assign a TOKEN
-  const token = jwt.sign({ _id: author._id }, process.env.TOKEN_SECRET);
-  res.header("auth-token", token).send(token);
+  //Create and assign a TOKEN when the author logs in.
+  const token = jwt.sign(
+    { authorId: author._id, email },
+    process.env.TOKEN_SECRET,
+    { expiresIn: "2h" }
+  );
+  //Save and replace the old token with the new one.
+  author.token = token;
+  // res.header("x-auth-token", token).json(token);
+  res.send(token);
 });
 
 module.exports = router;
+
+//Pseudo Code
+
+/*
+1. Find the author roles,
+ if (req.body.roles){
+   role.find({
+     name:
+   })
+ }
+ */

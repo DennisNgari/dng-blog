@@ -4,8 +4,22 @@ const verifyToken = require("../controllers/verifyToken");
 /*******************************
 		Initialize Routes
 *******************************/
-const PostSchema = require("../models/Post");
 const CategorySchema = require("../models/Category");
+
+/*******************************
+	          GET
+    Get all the Categories
+*******************************/
+
+router.get("/", async (req, res) => {
+  const categories = await CategorySchema.find({});
+  try {
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
 /*******************************
 	          GET
     Get posts by Category
@@ -28,19 +42,6 @@ router.get("/:category", async (req, res) => {
   }
 });
 
-/*******************************
-	          GET
-    Get all the Categories
-*******************************/
-
-router.get("/", async (req, res) => {
-  const categories = await CategorySchema.find({});
-  try {
-    res.status(200).json(categories);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
 /*******************************
 	          PUT
   Create a new category
@@ -87,7 +88,7 @@ router.put("/updatecategory/:id", verifyToken, async (req, res) => {
     );
     res.status(200).json(updatedCategory);
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ message: "Category DOES NOT Exist! " });
   }
 });
 
