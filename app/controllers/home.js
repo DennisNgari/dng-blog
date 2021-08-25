@@ -4,10 +4,10 @@ const PostSchema = require("../models/Post");
 /*******************************
 	// Sort all Posts by dates Updated.
 *******************************/
-function custom_sort(a, b) {
-  return new Date(a.lastUpdated).getTime() - new Date(b.lastUpdated).getTime();
-}
-PostSchema = sort(custom_sort);
+// function custom_sort(a, b) {
+//   return new Date(a.lastUpdated).getTime() - new Date(b.lastUpdated).getTime();
+// }
+// PostSchema.sort(custom_sort);
 
 /*******************************
 	          GET

@@ -15,7 +15,7 @@ const PostSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-UserSchema.pre("save", function (next) {
+PostSchema.pre("save", function (next) {
   this.slug = this.title.split(" ").join("-");
   next();
 });

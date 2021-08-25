@@ -28,8 +28,8 @@ const verifyToken = (req, res, next) => {
 
 const verifyUser = async (req, res, next) => {
   const author = res.locals.user;
-  const role = author.role;
-  if (role === "Admin") {
+
+  if (author.role === "Admin") {
     next();
     return;
   } else {

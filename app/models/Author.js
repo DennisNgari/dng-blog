@@ -5,6 +5,7 @@ const AuthorSchema = new mongoose.Schema(
   {
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    role: { type: String, default: "Standard" },
     phone: { type: String, required: true, min: 10, max: 13 },
     password: { type: String, required: true, min: 6, max: 1025 },
     avator: { type: String, default: "" },

@@ -26,7 +26,7 @@ const getAllAuthors = async (req, res) => {
 *******************************/
 const updateAuthor = async (req, res) => {
   // Compare the token with the id passed on the params.
-  if (req.author._id === req.params.id) {
+  if (req.author.authorId === req.body._id || req.author.role === "Admin") {
     // The authorId is passed via the verifyToken middleware.
     if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
@@ -34,7 +34,7 @@ const updateAuthor = async (req, res) => {
     }
     try {
       // Update the new User and send the data of the updated user in Json form.
-      const updatedUser = await AuthorSchema.findByIdAndUpdate(
+      const updatedAuthor = await AuthorSchema.findByIdAndUpdate(
         req.params.id,
         {
           $set: req.body,
@@ -43,7 +43,7 @@ const updateAuthor = async (req, res) => {
       );
       //Instead of sending back the entire data only send a message of confirmation..
       //Use local storage on the front end for confirmation before sending to the db.
-      res.status(200).json(updatedUser);
+      res.status(200).json(updatedAuthor);
     } catch (error) {
       res.status(500).json({ message: error });
     }
@@ -71,10 +71,10 @@ const getSpecificAuthor = async (req, res) => {
   Delete an individual Author but leave the Posts.
 *******************************/
 const deleteAuthorAlone = async (req, res) => {
-  if (req.author._id === req.params.id) {
+  if (req.author.authorId === req.body._id || req.author.role === "Admin") {
     try {
       await AuthorSchema.findByIdAndDelete(req.params.id);
-      res.status(200).json({ message: "User has been deleted." });
+      res.status(200).json({ message: "Author has been deleted." });
     } catch (error) {
       res.status(500).json({ message: error });
     }

@@ -8,7 +8,7 @@ const CategorySchema = new mongoose.Schema({
   slug: { type: String, slug: "categoryName" },
 });
 
-UserSchema.pre("save", function (next) {
+CategorySchema.pre("save", function (next) {
   this.slug = this.title.split(" ").join("-");
   next();
 });

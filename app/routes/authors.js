@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 //Get all the imports
-const { verifyToken, verifyAdmin } = require("../middlewares/auth");
+const { verifyToken, verifyUser } = require("../middlewares/auth");
 const {
   getAllAuthors,
   updateAuthor,
@@ -12,7 +12,7 @@ const {
 
 /*******************************
 	        PUT
-  Update Author credentials and posts based on Token.
+  Update Author credentials based on Token.
 *******************************/
 router.put("/:id", verifyToken, updateAuthor);
 
@@ -32,12 +32,16 @@ router.get("/:id", verifyToken, getSpecificAuthor);
 	        DELETE
   Delete an individual Author but leave the Posts.
 *******************************/
-router.delete("/deleteone/:id", [verifyToken, verifyAdmin], deleteAuthorAlone);
+router.delete(
+  "/delete-author/:id",
+  [verifyToken, verifyUser],
+  deleteAuthorAlone
+);
 
 /*******************************
 	        DELETE
   Delete an individual Author and all their posts.
 *******************************/
-router.delete("/:id", [verifyToken, verifyAdmin], deleteAuthorAndPosts);
+router.delete("/:id", [verifyToken, verifyUser], deleteAuthorAndPosts);
 
 module.exports = router;
