@@ -1,7 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-const Role = require("../models/Role");
-
 /*******************************
 	Verify User Token with 
         Token Secret Key
@@ -27,38 +25,35 @@ const verifyToken = (req, res, next) => {
 *********************************/
 
 //Admin
+
+const verifyUser = async (req, res, next) => {
+  const author = res.locals.user;
+  const role = author.role;
+  if (role === "Admin") {
+    next();
+    return;
+  } else {
+    return res.status(403).json({ message: "Unauthorized! " });
+  }
+};
+
+module.exports = { verifyToken, verifyUser };
+
 // const verifyAdmin = async (req, res, next) => {
-//   const aauth = await AuthorSchema.find({})
-//     .populate("roles")
+//   const author = res.locals.user;
+
+//   Role.findOne({ author: author.authorId })
+//     .populate("author")
 //     .exec((err, loggedInUser) => {
 //       if (err) {
 //         return res.status(500).send({ message: err });
 //       }
-//       if (loggedInUser.role === "standard") {
+//       const { role } = loggedInUser;
+//       if (role === "Admin") {
 //         next();
 //         return;
+//       } else {
+//         return res.status(403).json({ message: "Unauthorized! " });
 //       }
 //     });
-//   return res.status(403).json({ message: "Unauthorized! " });
 // };
-
-const verifyAdmin = async (req, res, next) => {
-  const author = res.locals.user;
-
-  Role.findOne({ author: author.authorId })
-    .populate("author")
-    .exec((err, loggedInUser) => {
-      if (err) {
-        return res.status(500).send({ message: err });
-      }
-      const { role } = loggedInUser;
-      if (role === "standard") {
-        next();
-        return;
-      } else {
-        return res.status(403).json({ message: "Unauthorized! " });
-      }
-    });
-};
-
-module.exports = { verifyToken, verifyAdmin };

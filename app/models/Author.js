@@ -8,9 +8,9 @@ const AuthorSchema = new mongoose.Schema(
     phone: { type: String, required: true, min: 10, max: 13 },
     password: { type: String, required: true, min: 6, max: 1025 },
     avator: { type: String, default: "" },
-    // role: { type: ObjectId, ref: "Role" },
-    active: { type: ObjectId, ref: "Active" },
+    active: { type: Boolean, default: true },
     token: { type: String },
+    post: [{ type: ObjectId, ref: "Post" }],
   },
   { timestamps: true, strict: true }
 );
