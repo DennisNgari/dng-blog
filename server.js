@@ -17,7 +17,7 @@ connection();
 const authRoute = require("./app/routes/auth");
 // const homeRoute = require("./app/routes/home");
 const authorRoute = require("./app/routes/authors");
-// const postsRoute = require("./app/routes/posts");
+const postsRoute = require("./app/routes/posts");
 // const categoryRoute = require("./app/routes/category");
 // const mediaRoute = require("./app/routes/media");
 
@@ -34,7 +34,7 @@ app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/authors", authorRoute);
 
 // //View all posts, categories and individual posts.
-// app.use("/api/v1/posts", postsRoute);
+app.use("/api/v1/posts", postsRoute);
 
 // //Create new categories and create post based on category.
 // app.use("/api/v1/category", categoryRoute);

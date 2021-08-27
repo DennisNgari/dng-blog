@@ -44,7 +44,7 @@ const registerNewAuthor = async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const hashPass = await bcrypt.hash(req.body.password, salt);
 
-  //Create a New Author in our database.
+  //Create a New Author in the database.
   const { fullName, email, phone } = req.body;
   //Change the fullName to sentence and email to lower case before saving in the db.
   const titleCase = (str) => {
@@ -61,6 +61,7 @@ const registerNewAuthor = async (req, res) => {
     phone,
     password: hashPass,
   });
+
   //Generate a token when the author registers.
   const token = jwt.sign(
     { authorId: newAuthor._id, email },

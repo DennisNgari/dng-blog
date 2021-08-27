@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { verifyToken, verifyAdmin } = require("../middlewares/auth");
+const { verifyToken } = require("../middlewares/auth");
 
 //Get all the imports
 const {
@@ -41,7 +41,7 @@ router.get("/:id", getSpecificPostById);
 	          GET 
 // Get all the posts of the logged in author.
 *******************************/
-router.get("/:id", verifyToken, getPostsOfLoggedInAuthor);
+router.get("/loggedauthor/:id", verifyToken, getPostsOfLoggedInAuthor);
 
 /*******************************
 	          GET 

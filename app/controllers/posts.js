@@ -11,44 +11,40 @@ const PostSchema = require("../models/Post");
 *******************************/
 const createNewPost = async (req, res) => {
   //Add the authorId from the auth-token as the FK in the PostSchema.
-  const tokenId = await req.author._id;
-  //Check if the Post exists.
-  const postExists = await PostSchema.findOne({
-    title: req.body.title,
-    body: req.body.body,
-    description: req.body.description,
-  });
+  const tokenId = await req.author.authorId;
+
+  // Check if the Post already exists.
+  const postExists = await PostSchema.findOne({ body: req.body.body });
   if (postExists)
-    return res.status(400).json({ message: "Post already exists!" });
+    return res.status(400).json({ message: "Post Already Exists" });
+  const { title, body, description, category } = req.body;
+  //Change the fullName to sentence and email to lower case before saving in the db.
 
+  //Reference the PostSchema to the AuthorSchema.
+  const newPost = new PostSchema({
+    title: title,
+    description,
+    body,
+    category,
+    authorId: tokenId,
+  });
+  // // Save the newPost
   try {
-    const newPost = new PostSchema({
-      authorId: tokenId,
-      title: req.body.title,
-      body: req.body.body,
-      description: req.body.description,
-      headerImage: req.body.headerImage,
-      slug: req.body.slug,
-      tags: req.body.tags,
-      category: req.body.category,
-    });
-
     const post = await newPost.save();
     res.status(200).json(post);
   } catch (error) {
-    res.status(500).json({ message: error });
+    return res.status(400).json({ message: error });
   }
 };
 
 /*******************************
 	    PUT
   Update a post
-  //Incomplete
 ******************************/
 const updateNewPost = async (req, res) => {
   // Compare the token with the id passed on the params.
   //The req.params.id is gotten from the body of the post i.e the authorId in the post schema.
-  if (req.author._id === req.params.id || req.author.role === "Admin") {
+  if (req.author.authorId === req.body._id || req.author.role === "Admin") {
     try {
       // Update the new User and send the data of the updated user in Json form.
       const updatedPost = await PostSchema.findByIdAndUpdate(
@@ -87,7 +83,6 @@ const getAllPosts = async (req, res) => {
 	      GET
   Get specific post based on PostId
 *******************************/
-
 const getSpecificPostById = async (req, res) => {
   try {
     const post = await PostSchema.findById(req.params.id);
@@ -104,20 +99,21 @@ const getSpecificPostById = async (req, res) => {
 
 const getPostsOfLoggedInAuthor = async (req, res) => {
   //The params.id in the PostsSchema is the authorId and not PostId
-  if (req.author._id === req.params.id || req.author.role === "Admin") {
-    //or user == Admin
+  if (
+    req.author.authorId === req.body.authorId ||
+    req.author.role === "Admin"
+  ) {
     try {
       const posts = await PostSchema.find({});
 
       const filteredposts = posts.filter((post) => {
-        return post.authorId === req.params.id;
+        return post.authorId === req.body.authorId;
       });
       res.status(200).json(filteredposts);
     } catch (error) {
-      res.status(500).send(error);
+      res.status(500).json({ message: "No Posts from this User! " });
     }
   }
-  res.status(500).json({ message: "User DOES NOT exist! " });
 };
 
 /*******************************
