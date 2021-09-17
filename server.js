@@ -33,7 +33,7 @@ app.use("/api/v1/auth", authRoute);
 // // // The authors can update their credentials and posts here.
 app.use("/api/v1/authors", authorRoute);
 
-// // //View all posts, categories and individual posts.
+// //View all posts, categories and individual posts.
 app.use("/api/v1/posts", postsRoute);
 
 //Create new categories and create post based on category.

@@ -12,6 +12,8 @@ const PostSchema = require("../models/Post");
 const createNewPost = async (req, res) => {
   //Add the authorId from the auth-token as the FK in the PostSchema.
   const tokenId = await req.author.authorId;
+  const authName = await req.author.fullName;
+  console.log(authName);
 
   // Check if the Post already exists.
   const postExists = await PostSchema.findOne({ body: req.body.body });
@@ -29,6 +31,7 @@ const createNewPost = async (req, res) => {
     body,
     category,
     authorId: tokenId,
+    fullName: authName,
   });
   // // Save the newPost
   try {
@@ -70,14 +73,32 @@ const updateNewPost = async (req, res) => {
 /*******************************
 	      GET
   Get all Posts
+  Get all posts from a given Author
+  Get all posts by category.
+  Get all posts byslug.
 *******************************/
-
 const getAllPosts = async (req, res) => {
-  const posts = await PostSchema.find({});
+  const fullName = req.query.user;
+  const catName = req.query.cat;
+  const slug = req.query.title;
   try {
-    res.send(posts);
+    let posts;
+    if (fullName) {
+      posts = await PostSchema.find({ fullName: fullName });
+    } else if (catName) {
+      posts = await PostSchema.find({
+        category: {
+          $in: [catName],
+        },
+      });
+    } else if (slug) {
+      posts = await PostSchema.find({ slug: slug });
+    } else {
+      posts = await PostSchema.find({});
+    }
+    res.status(200).json(posts);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ message: error });
   }
 };
 
@@ -91,30 +112,6 @@ const getSpecificPostById = async (req, res) => {
     res.status(200).json(post);
   } catch (error) {
     res.status(500).json({ message: error });
-  }
-};
-
-/*******************************
-	          GET 
-// Get all the posts of the logged in author.
-*******************************/
-
-const getPostsOfLoggedInAuthor = async (req, res) => {
-  //The params.id in the PostsSchema is the authorId and not PostId
-  if (
-    req.author.authorId === req.body.authorId ||
-    req.author.role === "Admin"
-  ) {
-    try {
-      const posts = await PostSchema.find({});
-
-      const filteredposts = posts.filter((post) => {
-        return post.authorId === req.body.authorId;
-      });
-      res.status(200).json(filteredposts);
-    } catch (error) {
-      res.status(500).json({ message: "No Posts from this User! " });
-    }
   }
 };
 
@@ -151,31 +148,6 @@ const deletePost = async (req, res) => {
     res.status(401).json({ message: "You can only DELETE your own Post!" });
   }
 };
-/*******************************
-	//GET posts by slug or Author name.
-  
-*******************************/
-// const getPostBySlugorAuthor = async (req, res) => {
-//   const username = req.query.slug;
-//   const catName = req.query.catName;
-//   try {
-//     let posts;
-//     if (username) {
-//       posts = await PostSchema.find({ username });
-//     } else if (catName) {
-//       posts = await PostSchema.find({
-//         category: {
-//           $in: [catName],
-//         },
-//       });
-//     } else {
-//       posts = await PostSchema.find();
-//     }
-//     res.status(200).json(posts);
-//   } catch (err) {
-//     res.status(500).json({ message: error });
-//   }
-// };
 
 /*******************************
 	//GET 
@@ -197,7 +169,6 @@ module.exports = {
   updateNewPost,
   getAllPosts,
   getSpecificPostById,
-  getPostsOfLoggedInAuthor,
   GetDetailsOfPostAuhor,
   deletePost,
 };

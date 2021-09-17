@@ -7,7 +7,6 @@ const {
   updateNewPost,
   getAllPosts,
   getSpecificPostById,
-  getPostsOfLoggedInAuthor,
   GetDetailsOfPostAuhor,
   deletePost,
 } = require("../controllers/posts");
@@ -38,12 +37,6 @@ router.get("/:id", getSpecificPostById);
 
 /*******************************
 	          GET
-// Get all the posts of the logged in author.
-*******************************/
-router.get("/loggedauthor/:id", verifyToken, getPostsOfLoggedInAuthor);
-
-/*******************************
-	          GET
 // Get the details of the post Author
 *******************************/
 router.get("/author/:authorId", GetDetailsOfPostAuhor);
@@ -57,7 +50,6 @@ router.delete("/deleteonepost/:id", verifyToken, deletePost);
 /*******************************
 	//GET posts by slug
 *******************************/
-// router.get("/slug/:slug", getPostBySlugorAuthor);
 
 /*******************************
 	//GET

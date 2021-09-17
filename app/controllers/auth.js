@@ -46,18 +46,10 @@ const registerNewAuthor = async (req, res) => {
 
   //Create a New Author in the database.
   const { fullName, email, phone } = req.body;
-  //Change the fullName to sentence and email to lower case before saving in the db.
-  const titleCase = (str) => {
-    str = str.toLowerCase().split(" ");
-    for (var i = 0; i < str.length; i++) {
-      str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
-    }
-    return str.join(" ");
-  };
 
   const newAuthor = new AuthorSchema({
-    fullName: titleCase(fullName),
-    email: email.toLowerCase(),
+    fullName,
+    email: email,
     phone,
     password: hashPass,
   });
@@ -111,15 +103,16 @@ const login = async (req, res) => {
   if (!validPass) return res.status(400).send("Invalid Password!");
 
   //Create and assign a TOKEN when the author logs in.
-  const { role } = author;
+  const { role, fullName } = author;
   const token = jwt.sign(
-    { authorId: author._id, email, role },
+    { authorId: author._id, email, role, fullName },
     process.env.TOKEN_SECRET,
     { expiresIn: "2h" }
   );
   //Save and replace the old token with the new one.
   author.token = token;
-  res.header("x-auth-token", token).send(token);
+  // res.header("x-auth-token", token).send(token);
+  res.status(200).json(author);
 };
 
 module.exports = { registerNewAuthor, login };

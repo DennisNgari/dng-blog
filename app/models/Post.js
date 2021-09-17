@@ -4,8 +4,8 @@ const PostSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     subtitle: { type: String, required: true },
-    userName: { type: String, required: true },
-    description: { type: String, required: true },
+    fullName: { type: String, required: true },
+    description: { type: String },
     readTime: { type: String, default: "6 min read" },
     headerImage: { type: String, required: false },
     authorId: { type: String },

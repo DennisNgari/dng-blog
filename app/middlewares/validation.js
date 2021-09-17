@@ -9,7 +9,7 @@ const registerValidation = (data) => {
     password: Joi.string().min(6).required(),
     phone: Joi.string().min(6).required(),
   });
-  return schema.validate(data);
+  return schema.validate(data, { abortEarly: false });
 };
 
 //Login validation
@@ -18,7 +18,7 @@ const loginValidation = (data) => {
     email: Joi.string().min(6).required().email(),
     password: Joi.string().min(6).required(),
   });
-  return schema.validate(data);
+  return schema.validate(data, { abortEarly: false });
 };
 
 module.exports.registerValidation = registerValidation;
