@@ -4,14 +4,14 @@ const router = require("express").Router();
 const { registerNewAuthor, login } = require("../controllers/auth");
 
 /*******************************
-	        POST 
+	        POST
       Register a new Author
 *******************************/
 router.post("/register", registerNewAuthor);
 
 /*******************************
-	        POST 
-        Login a User.
+	        POST
+        Login a Author.
 *******************************/
 router.post("/login", login);
 

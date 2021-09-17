@@ -17,12 +17,14 @@ const createNewPost = async (req, res) => {
   const postExists = await PostSchema.findOne({ body: req.body.body });
   if (postExists)
     return res.status(400).json({ message: "Post Already Exists" });
-  const { title, body, description, category } = req.body;
+  const { title, subtitle, readTime, body, description, category } = req.body;
   //Change the fullName to sentence and email to lower case before saving in the db.
 
   //Reference the PostSchema to the AuthorSchema.
   const newPost = new PostSchema({
-    title: title,
+    title,
+    readTime,
+    subtitle,
     description,
     body,
     category,
@@ -121,7 +123,7 @@ const getPostsOfLoggedInAuthor = async (req, res) => {
 // Get the details of the post author
 *******************************/
 const GetDetailsOfPostAuhor = async (req, res) => {
-  const { authorId } = PostSchema;
+  const authorId = req.body.authorId;
 
   try {
     const { fullName, email } = await AuthorSchema.findById({ _id: authorId });
@@ -135,9 +137,10 @@ const GetDetailsOfPostAuhor = async (req, res) => {
 /*******************************
 	       DELETE
   Remove a specific post
+  //Uncomplete..
 ******************************/
 const deletePost = async (req, res) => {
-  if (req.author._id === req.params.id) {
+  if (req.author.authorId === req.body.authorId) {
     try {
       await PostSchema.findByIdAndDelete(req.params.id);
       res.status(200).json({ message: "Post has been deleted." });
@@ -149,16 +152,45 @@ const deletePost = async (req, res) => {
   }
 };
 /*******************************
-	//GET posts by slug
+	//GET posts by slug or Author name.
+  
 *******************************/
-const getPostBySlug = async (req, res) => {
-  try {
-    const post = await PostSchema.find({ slug: req.params.slug });
-    res.status(200).json(post);
-  } catch (error) {
-    res.status(500).json({ message: error });
-  }
-};
+// const getPostBySlugorAuthor = async (req, res) => {
+//   const username = req.query.slug;
+//   const catName = req.query.catName;
+//   try {
+//     let posts;
+//     if (username) {
+//       posts = await PostSchema.find({ username });
+//     } else if (catName) {
+//       posts = await PostSchema.find({
+//         category: {
+//           $in: [catName],
+//         },
+//       });
+//     } else {
+//       posts = await PostSchema.find();
+//     }
+//     res.status(200).json(posts);
+//   } catch (err) {
+//     res.status(500).json({ message: error });
+//   }
+// };
+
+/*******************************
+	//GET 
+  Get all the featured Posts
+*******************************/
+
+/*******************************
+	//GET 
+  Get all featured Posts In each Category
+*******************************/
+
+/*******************************
+	//GET 
+  Get the editorial Posts.
+*******************************/
 
 module.exports = {
   createNewPost,
@@ -168,5 +200,4 @@ module.exports = {
   getPostsOfLoggedInAuthor,
   GetDetailsOfPostAuhor,
   deletePost,
-  getPostBySlug,
 };

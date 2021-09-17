@@ -9,8 +9,9 @@ const CategorySchema = new mongoose.Schema({
 });
 
 CategorySchema.pre("save", function (next) {
-  this.slug = this.title.split(" ").join("-");
+  this.slug = this.categoryName.split(" ").join("-").toLowerCase();
   next();
 });
 
-module.exports = mongoose.model("Category", CategorySchema);
+const Category = mongoose.model("Category", CategorySchema);
+module.exports = Category;

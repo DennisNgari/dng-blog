@@ -1,7 +1,13 @@
+// Load .env Variables
+require("dotenv").config();
+
 /*******************************
 		Initialize Routes
 *******************************/
 const CategorySchema = require("../models/Category");
+
+//Get The Imports
+// const { verifyToken } = require("../middlewares/auth");
 
 /*******************************
 	          GET
@@ -38,15 +44,14 @@ const getPostsByCategory = async (req, res) => {
 };
 
 /*******************************
-	          PUT
+	          POST
   Create a new category
 *******************************/
 const createNewCategory = async (req, res) => {
   /* Add the authorId from the auth-token as the FK in the CategorySchema.
         This is used to control the access for deleting and adding new categories.
     */
-
-  const tokenId = await req.author._id;
+  // const tokenId = req.author.authorId;
   //Check if the category already exists.
   const categoryExists = await CategorySchema.findOne({
     categoryName: req.body.categoryName,
@@ -55,9 +60,17 @@ const createNewCategory = async (req, res) => {
     return res.status(400).json({ message: "Category already exists!" });
 
   //Create a New Category.
+  const { categoryName } = req.body;
+  //Change the category to sentence case before saving in the db.
+  const titleCase = (str) => {
+    str = str.toLowerCase().split(" ");
+    for (var i = 0; i < str.length; i++) {
+      str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+    }
+    return str.join(" ");
+  };
   const newCategory = new CategorySchema({
-    categoryName: req.body.categoryName,
-    authorId: tokenId,
+    categoryName: titleCase(categoryName),
   });
 
   try {
@@ -65,25 +78,6 @@ const createNewCategory = async (req, res) => {
     res.status(200).json(category);
   } catch (error) {
     res.status(500).json({ message: error });
-  }
-};
-
-/*******************************
-	        PUT
-  Update a category
-*******************************/
-const updateCategory = async (req, res) => {
-  try {
-    const updatedCategory = await CategorySchema.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: req.body,
-      },
-      { new: true }
-    );
-    res.status(200).json(updatedCategory);
-  } catch (error) {
-    res.status(500).json({ message: "Category DOES NOT Exist! " });
   }
 };
 
@@ -104,6 +98,5 @@ module.exports = {
   getAllCategories,
   getPostsByCategory,
   createNewCategory,
-  updateCategory,
   deleteCategory,
 };

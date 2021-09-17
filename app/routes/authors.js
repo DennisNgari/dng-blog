@@ -20,7 +20,7 @@ router.put("/updateauthor/:id", verifyToken, updateAuthor);
 	        GET
       Get all Authors.
 *******************************/
-router.get("/", verifyToken, getAllAuthors);
+router.get("/", /* verifyToken,*/ getAllAuthors);
 
 /*******************************
 	        GET

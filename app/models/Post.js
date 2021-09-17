@@ -3,7 +3,10 @@ const mongoose = require("mongoose");
 const PostSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
+    subtitle: { type: String, required: true },
+    userName: { type: String, required: true },
     description: { type: String, required: true },
+    readTime: { type: String, default: "6 min read" },
     headerImage: { type: String, required: false },
     authorId: { type: String },
     featured: { type: String, default: "false" },
@@ -75,8 +78,19 @@ String.prototype.toTitleCase = function () {
 
   return str;
 };
+/**************************************
+      Format the title
+****************************************/
 PostSchema.pre("save", function (next) {
   this.title = this.title.toTitleCase();
+  next();
+});
+
+/**************************************
+      Format the subtitle
+****************************************/
+PostSchema.pre("save", function (next) {
+  this.subtitle = this.subtitle.toTitleCase();
   next();
 });
 

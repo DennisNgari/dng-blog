@@ -1,15 +1,21 @@
 const router = require("express").Router();
-const verifyToken = require("../controllers/verifyToken");
+const verifyToken = require("../middlewares/auth");
 
 //Initialize the routes
 
 const {
-  getAllCategories,
   createNewCategory,
+  getAllCategories,
   getPostsByCategory,
-  updateCategory,
   deleteCategory,
 } = require("../controllers/category");
+
+/*******************************
+	          POST
+  Create a new category
+*******************************/
+router.post("/newcategory", createNewCategory);
+
 /*******************************
 	          GET
     Get all the Categories
@@ -25,22 +31,10 @@ router.get("/", getAllCategories);
 router.get("/:category", getPostsByCategory);
 
 /*******************************
-	          PUT
-  Create a new category
-*******************************/
-router.post("/newcategory", verifyToken, createNewCategory);
-
-/*******************************
-	        PUT
-  Update a category
-*******************************/
-router.put("/updatecategory/:id", verifyToken, updateCategory);
-
-/*******************************
 	      DELETE
   Delete a Category
 *******************************/
-router.delete("/deletecategory/:id", verifyToken, deleteCategory);
+router.delete("/deletecategory/:id", deleteCategory);
 
 //Export
 module.exports = router;

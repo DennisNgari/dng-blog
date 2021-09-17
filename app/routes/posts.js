@@ -10,7 +10,6 @@ const {
   getPostsOfLoggedInAuthor,
   GetDetailsOfPostAuhor,
   deletePost,
-  getPostBySlug,
 } = require("../controllers/posts");
 
 /*******************************
@@ -38,16 +37,16 @@ router.get("/", getAllPosts);
 router.get("/:id", getSpecificPostById);
 
 /*******************************
-	          GET 
+	          GET
 // Get all the posts of the logged in author.
 *******************************/
 router.get("/loggedauthor/:id", verifyToken, getPostsOfLoggedInAuthor);
 
 /*******************************
-	          GET 
+	          GET
 // Get the details of the post Author
 *******************************/
-router.get("/:authorId", GetDetailsOfPostAuhor);
+router.get("/author/:authorId", GetDetailsOfPostAuhor);
 
 /*******************************
 	       DELETE
@@ -58,7 +57,22 @@ router.delete("/deleteonepost/:id", verifyToken, deletePost);
 /*******************************
 	//GET posts by slug
 *******************************/
-router.get("/:slug", getPostBySlug);
+// router.get("/slug/:slug", getPostBySlugorAuthor);
+
+/*******************************
+	//GET
+  Get all the featured Posts
+*******************************/
+
+/*******************************                                                            
+	//GET
+  Get the editorial Posts.
+*******************************/
+
+/*******************************
+	//GET
+  Get all the featured Posts by category.
+*******************************/
 
 //Export
 module.exports = router;
