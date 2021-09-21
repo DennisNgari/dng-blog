@@ -15,7 +15,7 @@ const {
 	      POST
   Create a New post
 *******************************/
-router.post("/newpost", verifyToken, createNewPost);
+router.post("/newpost", /*verifyToken*/ createNewPost);
 
 /*******************************
 	    PUT
@@ -38,6 +38,7 @@ router.get("/:id", getSpecificPostById);
 /*******************************
 	          GET
 // Get the details of the post Author
+// incomplete...
 *******************************/
 router.get("/author/:authorId", GetDetailsOfPostAuhor);
 
@@ -45,11 +46,7 @@ router.get("/author/:authorId", GetDetailsOfPostAuhor);
 	       DELETE
   Remove a specific post
 *******************************/
-router.delete("/deleteonepost/:id", verifyToken, deletePost);
-
-/*******************************
-	//GET posts by slug
-*******************************/
+router.delete("/:id", /*verifyToken,*/ deletePost);
 
 /*******************************
 	//GET

@@ -12,6 +12,31 @@ const connection = require("./app/controllers/db");
 connection();
 
 /*******************************
+	Image Upload and Storage.
+*******************************/
+// Upload media files
+const multer = require("multer");
+const path = require("path");
+// Make the images folder public.
+app.use("/images", express.static(path.join(__dirname, "app/images")));
+
+// This takes our file and saves it in the images folder.
+// The filename ois the name the user is providing.
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./app/images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.body.name);
+  },
+});
+// Upload the file
+const upload = multer({ storage: storage });
+app.post("/api/v1/upload", upload.single("file"), (req, res) => {
+  res.status(200).json("File has been uploaded!");
+});
+/*******************************
 		Import Routes
 *******************************/
 const authRoute = require("./app/routes/auth");

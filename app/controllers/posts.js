@@ -11,31 +11,38 @@ const PostSchema = require("../models/Post");
 *******************************/
 const createNewPost = async (req, res) => {
   //Add the authorId from the auth-token as the FK in the PostSchema.
-  const tokenId = await req.author.authorId;
-  const authName = await req.author.fullName;
-  console.log(authName);
 
   // Check if the Post already exists.
   const postExists = await PostSchema.findOne({ body: req.body.body });
   if (postExists)
     return res.status(400).json({ message: "Post Already Exists" });
-  const { title, subtitle, readTime, body, description, category } = req.body;
-  //Change the fullName to sentence and email to lower case before saving in the db.
 
-  //Reference the PostSchema to the AuthorSchema.
+  const {
+    title,
+    readTime,
+    body,
+    description,
+    category,
+    tags,
+    headerImage,
+    fullName,
+  } = req.body;
+
   const newPost = new PostSchema({
     title,
     readTime,
-    subtitle,
     description,
     body,
+    tags,
     category,
-    authorId: tokenId,
-    fullName: authName,
+    headerImage,
+    fullName,
   });
+
   // // Save the newPost
   try {
     const post = await newPost.save();
+    console.log("saving...");
     res.status(200).json(post);
   } catch (error) {
     return res.status(400).json({ message: error });
@@ -49,33 +56,32 @@ const createNewPost = async (req, res) => {
 const updateNewPost = async (req, res) => {
   // Compare the token with the id passed on the params.
   //The req.params.id is gotten from the body of the post i.e the authorId in the post schema.
-  if (req.author.authorId === req.body._id || req.author.role === "Admin") {
-    try {
-      // Update the new User and send the data of the updated user in Json form.
-      const updatedPost = await PostSchema.findByIdAndUpdate(
-        req.params.id,
-        {
-          $set: req.body,
-        },
-        { new: true }
-      );
-      //Instead of sending back the entire data only send a message of confirmation..
-      //Use local storage on the front end for confirmation before sending to the db.
-      res.status(200).json(updatedPost);
-    } catch (error) {
-      res.status(500).json({ message: error });
-    }
-  } else {
-    res.status(401).json({ message: "You can only update your own post!" });
+
+  try {
+    // Update the new User and send the data of the updated user in Json form.
+    const updatedPost = await PostSchema.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: req.body,
+      },
+      { new: true }
+    );
+    //Instead of sending back the entire data only send a message of confirmation..
+    //Use local storage on the front end for confirmation before sending to the db.
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    res.status(500).json({ message: error });
   }
+
+  res.status(401).json({ message: "You can only update your own post!" });
 };
 
 /*******************************
 	      GET
-  Get all Posts
-  Get all posts from a given Author
-  Get all posts by category.
-  Get all posts byslug.
+  Get all Posts (/posts)
+  Get all posts by a given Author based on Author Name (/posts?user=name)
+  Get all posts by category. (/posts?cat=categoryName)
+  Get posts by slug. (/posts?slug=slug)
 *******************************/
 const getAllPosts = async (req, res) => {
   const fullName = req.query.user;
@@ -104,7 +110,7 @@ const getAllPosts = async (req, res) => {
 
 /*******************************
 	      GET
-  Get specific post based on PostId
+  Get a specific post based on PostId
 *******************************/
 const getSpecificPostById = async (req, res) => {
   try {
@@ -118,6 +124,7 @@ const getSpecificPostById = async (req, res) => {
 /*******************************
 	          GET 
 // Get the details of the post author
+// Incomplete....
 *******************************/
 const GetDetailsOfPostAuhor = async (req, res) => {
   const authorId = req.body.authorId;
@@ -134,18 +141,27 @@ const GetDetailsOfPostAuhor = async (req, res) => {
 /*******************************
 	       DELETE
   Remove a specific post
-  //Uncomplete..
+  // This function delete the posts completely.
+  // Make sure to implement filter instead while the Admin is the one allowed to permanently delete.
+  // Incomplete...
 ******************************/
 const deletePost = async (req, res) => {
-  if (req.author.authorId === req.body.authorId) {
-    try {
-      await PostSchema.findByIdAndDelete(req.params.id);
-      res.status(200).json({ message: "Post has been deleted." });
-    } catch (error) {
-      res.status(500).json({ message: error });
+  try {
+    const post = await PostSchema.findById(req.params.id);
+    if (post.fullName === req.body.fullName) {
+      console.log("one..");
+      try {
+        await PostSchema.findByIdAndDelete(req.params.id);
+        console.log("two...");
+        res.status(200).json({ message: "Post has been Deleted..." });
+      } catch (error) {
+        res.status(500).json({ message: error });
+      }
+    } else {
+      res.status(401).json({ message: "You can only delete your Post!" });
     }
-  } else {
-    res.status(401).json({ message: "You can only DELETE your own Post!" });
+  } catch (error) {
+    res.status(500).json({ message: error });
   }
 };
 
