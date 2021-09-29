@@ -25,9 +25,8 @@ const getAllAuthors = async (req, res) => {
   Update Author credentials and posts based on Token.
 *******************************/
 const updateAuthor = async (req, res) => {
-  // Compare the token with the id passed on the params.
-  if (req.author.authorId === req.body._id || req.author.role === "Admin") {
-    // The authorId is passed via the verifyToken middleware.
+  // Compare the token with the   passed on the params.
+  if (req.body.userId === req.params.id) {
     if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
       req.body.password = await bcrypt.hash(req.body.password, salt);

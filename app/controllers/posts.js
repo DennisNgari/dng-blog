@@ -54,26 +54,27 @@ const createNewPost = async (req, res) => {
   Update a post
 ******************************/
 const updateNewPost = async (req, res) => {
-  // Compare the token with the id passed on the params.
-  //The req.params.id is gotten from the body of the post i.e the authorId in the post schema.
-
   try {
-    // Update the new User and send the data of the updated user in Json form.
-    const updatedPost = await PostSchema.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: req.body,
-      },
-      { new: true }
-    );
-    //Instead of sending back the entire data only send a message of confirmation..
-    //Use local storage on the front end for confirmation before sending to the db.
-    res.status(200).json(updatedPost);
+    const post = await PostSchema.findById(req.params.id);
+    if (post.fullName === req.body.fullName) {
+      try {
+        const updatedPost = await PostSchema.findByIdAndUpdate(
+          req.params.id,
+          {
+            $set: req.body,
+          },
+          { new: true }
+        );
+        res.status(200).json(updatedPost);
+      } catch (error) {
+        res.status(500).json({ message: error });
+      }
+    } else {
+      res.status(401).json("You can Only update your Post!");
+    }
   } catch (error) {
     res.status(500).json({ message: error });
   }
-
-  res.status(401).json({ message: "You can only update your own post!" });
 };
 
 /*******************************

@@ -14,7 +14,7 @@ const {
 	        PUT
   Update Author credentials based on Token.
 *******************************/
-router.put("/updateauthor/:id", verifyToken, updateAuthor);
+router.put("/updateauthor/:id", updateAuthor);
 
 /*******************************
 	        GET

@@ -21,7 +21,7 @@ router.post("/newpost", /*verifyToken*/ createNewPost);
 	    PUT
   Update a post
 *******************************/
-router.put("/updatepost/:id", verifyToken, updateNewPost);
+router.put("/updatepost/:id", updateNewPost);
 
 /*******************************
 	      GET
