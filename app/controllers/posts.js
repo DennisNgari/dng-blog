@@ -42,7 +42,6 @@ const createNewPost = async (req, res) => {
   // // Save the newPost
   try {
     const post = await newPost.save();
-    console.log("saving...");
     res.status(200).json(post);
   } catch (error) {
     return res.status(400).json({ message: error });
@@ -153,7 +152,6 @@ const deletePost = async (req, res) => {
       console.log("one..");
       try {
         await PostSchema.findByIdAndDelete(req.params.id);
-        console.log("two...");
         res.status(200).json({ message: "Post has been Deleted..." });
       } catch (error) {
         res.status(500).json({ message: error });

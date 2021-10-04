@@ -6,7 +6,6 @@ const verifyToken = require("../middlewares/auth");
 const {
   createNewCategory,
   getAllCategories,
-  getPostsByCategory,
   deleteCategory,
 } = require("../controllers/category");
 
@@ -22,13 +21,6 @@ router.post("/newcategory", createNewCategory);
 *******************************/
 
 router.get("/", getAllCategories);
-
-/*******************************
-	          GET
-    Get posts by Category
-*******************************/
-//What the User clicks a category in the frontEnd, the category is taken as the " :category".
-router.get("/:category", getPostsByCategory);
 
 /*******************************
 	      DELETE

@@ -1,15 +1,16 @@
 const mongoose = require("mongoose");
 
 const CategorySchema = new mongoose.Schema({
-  categoryName: {
-    type: String,
-    required: true,
-  },
-  slug: { type: String, slug: "categoryName" },
+  categoryName: { type: String, required: true },
+  categoryImage: { type: String, require: true },
 });
 
+/**************************************
+	 Change the Tittle to sentence Case.
+*****************************************/
+//Change the category to sentence case before saving in the db.
 CategorySchema.pre("save", function (next) {
-  this.slug = this.categoryName.split(" ").join("-").toLowerCase();
+  this.categoryName = this.categoryName.toTitleCase();
   next();
 });
 
